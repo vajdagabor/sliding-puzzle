@@ -27,6 +27,11 @@
   --color-primary: var(--c-blue);
 }
 
+@define-mixin petite-caps {
+  font-variant-caps: all-petite-caps;
+  letter-spacing: 0.1ch;
+}
+
 html {
   @mixin theme-light;
 
@@ -52,17 +57,19 @@ main {
 }
 
 .Header__Title {
+  @mixin petite-caps;
+
   flex-grow: 1;
-  font-variant-caps: all-petite-caps;
   font-weight: bold;
 }
 
 .Header__Tools {
+  display: flex;
+  gap: 2rem;
   flex-grow: 0;
 }
 
 .Counter {
-  color: var(--color-subtle);
   span {
     padding: 0 0.5em;
     color: var(--color-normal);
@@ -70,9 +77,11 @@ main {
 }
 
 .Button {
-  padding: 0.3em 0.4em;
+  @mixin petite-caps;
+
+  padding: 0.3em 0.5em;
   border: 2px solid var(--color-subtle);
-  font-weight: bold;
+  color: var(--color-subtle);
   cursor: pointer;
 
   &:hover {
