@@ -21,7 +21,7 @@ export function App() {
 
   return (
     <>
-      <Header>
+      <Header title="The Slider Game">
         <Counter n={size} onDecrement={shrink} onIncrement={grow} />
       </Header>
       <main>
