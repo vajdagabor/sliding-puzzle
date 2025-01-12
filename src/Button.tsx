@@ -1,8 +1,11 @@
-interface Props {
+interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string
-  onClick?: React.MouseEventHandler
 }
 
-export function Button({ label, onClick }: Props) {
-  return <button className="Button" onClick={onClick}>{label}</button>
+export function Button({ label, ...rest}: Props) {
+  return (
+    <button className="Button" {...rest}>
+      {label}
+    </button>
+  )
 }
