@@ -84,14 +84,19 @@ main {
   color: var(--color-subtle);
   cursor: pointer;
 
-  &:hover {
+  &:not(:disabled):hover {
     border-color: var(--color-normal);
     color: var(--color-normal);
   }
 
-  &:active {
+  &:not(:disabled):active {
     border-color: var(--color-strong);
     color: var(--color-strong);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 30%;
   }
 }
 
