@@ -15,6 +15,17 @@ export function newFieldsShuffled(size: number): Field[] {
   return shuffle(newFields(size))
 }
 
+function isNumberArray(arr: Field[]): arr is number[] {
+  return arr.every(v => typeof v === 'number')
+}
+
+export function isSorted(fs: Field[]) {
+  const fields = fs.slice(0,fs.length - 1)
+  if (!isNumberArray(fields)) return false
+
+  return fields.every((v, i, arr) => i === 0 || arr[i - 1] <= v)
+}
+
 type PosOf = (index: number, size: number) => Pos
 export const posOf: PosOf = (index, size) => {
   return { x: index % size, y: Math.floor(index / size) }

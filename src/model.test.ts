@@ -1,10 +1,5 @@
 import { describe, it, test, expect } from 'vitest'
-import {
-  canMove,
-  newFields,
-  newFieldsShuffled,
-  posOf,
-} from './model'
+import { canMove, isSorted, newFields, newFieldsShuffled, posOf } from './model'
 
 describe('newFieldsSorted()', () => {
   it('should create a single-cell board, with a single null field', () => {
@@ -39,6 +34,23 @@ describe('newFieldsShuffled()', () => {
   })
 })
 
+describe('isSorted()', () => {
+  it.each`
+    fields             | expected | desc
+    ${[null]}          | ${true}  | ${'sorted'}
+    ${[1]}             | ${true}  | ${'sorted'}
+    ${[1, 2, 3]}       | ${true}  | ${'sorted'}
+    ${[1, 2, 3, null]} | ${true}  | ${'sorted'}
+    ${[null, 1]}       | ${false} | ${'shuffled'}
+    ${[1, null, 2, 3]} | ${false} | ${'shuffled'}
+    ${[2, 1, 3]}       | ${false} | ${'shuffled'}
+    ${[2, 1, 3, null]} | ${false} | ${'shuffled'}
+  `(`$fields is $desc}`, ({ fields, expected }) => {
+    const result = isSorted(fields)
+    expect(result).toBe(expected)
+  })
+})
+
 describe('posOf()', () => {
   test.each([
     [0, 2, { x: 0, y: 0 }],
@@ -70,15 +82,11 @@ describe('canMove()', () => {
     ${0} | ${3} | ${[0, 1, 2, null, 4, 5, 6, 7, 8]} | ${true}  | ${'0 can move down'}
     ${1} | ${3} | ${[0, 1, 2, 3, null, 5, 6, 7, 8]} | ${true}  | ${'1 can move down'}
     ${2} | ${3} | ${[0, 1, 2, 3, 4, null, 6, 7, 8]} | ${true}  | ${'2 can move down'}
-    ${0} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false}  | ${'0 cannot move'}
-    ${1} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false}  | ${'1 cannot move'}
-    ${2} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false}  | ${'2 cannot move'}
-
-  `(
-    '$desc',
-    ({ i, s, fields, expected }) => {
-      const result = canMove(i, s, fields)
-      expect(result).toBe(expected)
-    }
-  )
+    ${0} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false} | ${'0 cannot move'}
+    ${1} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false} | ${'1 cannot move'}
+    ${2} | ${3} | ${[0, 1, 2, 3, 4, 5, 6, 7, null]} | ${false} | ${'2 cannot move'}
+  `('$desc', ({ i, s, fields, expected }) => {
+    const result = canMove(i, s, fields)
+    expect(result).toBe(expected)
+  })
 })
