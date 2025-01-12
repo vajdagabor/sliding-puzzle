@@ -1,33 +1,48 @@
-import { useState, useEffect } from 'react'
+import { useReducer } from 'react'
+import { State, reducer } from './reducer'
 import { Board } from './Board'
-import { move, newFields, newFieldsShuffled } from './model'
+import { newFields } from './model'
 import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
 
-export function App() {
-  const [size, setSize] = useState(3)
-  const [fields, setFields] = useState(newFields(size))
+const minSize = 3
+const maxSize = 9
+const initialSize = 3
+const initialState: State = {
+  size: initialSize,
+  fields: newFields(initialSize),
+}
 
-  useEffect(() => {
-    setFields(newFields(size))
-  }, [size])
+export function App() {
+  const [{ size, fields }, dispatch] = useReducer(reducer, initialState)
 
   function handleFieldClick(index: number) {
-    setFields(fs => move(index, size, fs))
+    dispatch({ type: 'MOVE', index })
   }
 
   function handleShuffleClick() {
-    setFields(newFieldsShuffled(size))
+    dispatch({ type: 'SHUFFLE' })
   }
 
-  const shrink = () => setSize(s => s - 1)
-  const grow = () => setSize(s => s + 1)
+  function shrink() {
+    dispatch({ type: 'SHRINK' })
+  }
+
+  function grow() {
+    dispatch({ type: 'GROW' })
+  }
 
   return (
     <>
       <Header title="The Slider Game">
-        <Counter n={size} onDecrement={shrink} onIncrement={grow} />
+        <Counter
+          n={size}
+          min={minSize}
+          max={maxSize}
+          onDecrement={shrink}
+          onIncrement={grow}
+        />
         <Button label="Shuffle" onClick={handleShuffleClick} />
       </Header>
       <main>
