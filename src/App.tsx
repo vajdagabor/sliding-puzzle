@@ -1,10 +1,11 @@
 import { useReducer } from 'react'
 import { State, reducer } from './reducer'
 import { Board } from './Board'
-import { newFields } from './model'
+import { isSorted, newFields } from './model'
 import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
+import { Lamp } from './Lamp'
 
 const minSize = 3
 const maxSize = 9
@@ -16,6 +17,7 @@ const initialState: State = {
 
 export function App() {
   const [{ size, fields }, dispatch] = useReducer(reducer, initialState)
+  const sorted = isSorted(fields)
 
   function handleFieldClick(index: number) {
     dispatch({ type: 'MOVE', index })
@@ -36,6 +38,7 @@ export function App() {
   return (
     <>
       <Header title="The Slider Game">
+        <Lamp isOn={sorted} label={'Sorted'} />
         <Counter
           n={size}
           min={minSize}
