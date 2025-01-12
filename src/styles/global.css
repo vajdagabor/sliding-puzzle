@@ -7,6 +7,8 @@
   --c-gray-middle: #888;
   --c-gray-dark: #333;
   --c-blue: rgb(38, 144, 224);
+  --c-green: rgb(170, 255, 0);
+  --c-green-middle: rgb(153, 193, 73);
 
   --radius: 5px;
 }
@@ -17,6 +19,8 @@
   --color-normal: var(--c-gray-middle);
   --color-subtle: var(--c-gray-subtle);
   --color-primary: var(--c-blue);
+  --color-yes-light: var(--c-green);
+  --color-yes-dark: var(--c-green-middle);
 }
 
 @define-mixin theme-dark {
@@ -25,10 +29,12 @@
   --color-normal: var(--c-gray-subtle);
   --color-subtle: var(--c-gray-middle);
   --color-primary: var(--c-blue);
+  --color-yes-light: var(--c-green);
+  --color-yes-dark: var(--c-green-middle);
 }
 
-@define-mixin petite-caps {
-  font-variant-caps: all-petite-caps;
+@define-mixin all-caps {
+  text-transform: uppercase;
   letter-spacing: 0.1ch;
 }
 
@@ -57,7 +63,7 @@ main {
 }
 
 .Header__Title {
-  @mixin petite-caps;
+  @mixin all-caps;
 
   flex-grow: 1;
   font-weight: bold;
@@ -70,18 +76,24 @@ main {
 }
 
 .Counter {
+  display: flex;
+  align-items: center;
+
   span {
-    padding: 0 0.5em;
+    display: block;
+    width: 1.5em;
+    text-align: center;
     color: var(--color-normal);
   }
 }
 
 .Button {
-  @mixin petite-caps;
+  @mixin all-caps;
 
-  padding: 0.3em 0.5em;
+  padding: 0.5em 0.8em;
   border: 2px solid var(--color-subtle);
   color: var(--color-subtle);
+  font-size: 14px;
   cursor: pointer;
 
   &:not(:disabled):hover {
@@ -96,7 +108,7 @@ main {
 
   &:disabled {
     cursor: default;
-    opacity: 30%;
+    opacity: 0.3;
   }
 }
 
@@ -145,6 +157,58 @@ main {
       align-items: center;
       color: rgba(255, 255, 255, 0.5);
       font-size: 2em;
+    }
+  }
+}
+
+.Lamp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .Lamp__Indicator {
+    display: block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--color-subtle);
+    border-radius: 1rem;
+    transition-property: border-color, background-color, box-shadow, opacity;
+    transition-delay: 0.3s;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .Lamp__Label {
+    @mixin all-caps;
+
+    display: block;
+    font-size: 14px;
+    transition-property: color, opacity;
+    transition-delay: 0.3s;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  &[data-state='on'] {
+    .Lamp__Indicator {
+      border-color: transparent;
+      background-color: var(--color-yes-light);
+      box-shadow: 0 0 30px 5px rgba(255, 255, 255, .1), 0 0 25px 1px var(--color-yes-light);
+    }
+
+    .Lamp__Label {
+      color: var(--color-strong);
+    }
+  }
+
+  &[data-state='off'] {
+    .Lamp__Indicator {
+      opacity: 0.3;
+    }
+
+    .Lamp__Label {
+      color: var(--color-subtle);
+      opacity: 0.3;
     }
   }
 }
