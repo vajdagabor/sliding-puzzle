@@ -160,8 +160,7 @@ main {
       display: flex;
       justify-content: center;
       align-items: center;
-      /* color: rgba(255, 255, 255, 0.5); */
-      font-size: 1.8em;
+      font-size: 1.6em;
     }
   }
 }
@@ -196,7 +195,8 @@ main {
     .Lamp__Indicator {
       border-color: transparent;
       background-color: var(--color-yes-light);
-      box-shadow: 0 0 30px 5px rgba(255, 255, 255, .1), 0 0 25px 1px var(--color-yes-light);
+      box-shadow: 0 0 30px 5px rgba(255, 255, 255, 0.1),
+        0 0 25px 1px var(--color-yes-light);
     }
 
     .Lamp__Label {
