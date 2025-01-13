@@ -151,12 +151,12 @@ main {
     background-color: transparent;
 
     &::after {
-      content: '•';
+      content: '🥸';
       display: flex;
       justify-content: center;
       align-items: center;
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 2em;
+      /* color: rgba(255, 255, 255, 0.5); */
+      font-size: 1.8em;
     }
   }
 }
@@ -173,7 +173,6 @@ main {
     border: 2px solid var(--color-subtle);
     border-radius: 1rem;
     transition-property: border-color, background-color, box-shadow, opacity;
-    transition-delay: 0.3s;
     transition-duration: 0.5s;
     transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
   }
@@ -184,7 +183,6 @@ main {
     display: block;
     font-size: 14px;
     transition-property: color, opacity;
-    transition-delay: 0.3s;
     transition-duration: 0.5s;
     transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
   }
