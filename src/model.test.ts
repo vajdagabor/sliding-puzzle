@@ -1,5 +1,12 @@
 import { describe, it, test, expect } from 'vitest'
-import { canMove, isSorted, newFields, newFieldsShuffled, posOf } from './model'
+import {
+  canMove,
+  isSorted,
+  newFields,
+  newFieldsShuffled,
+  posOf,
+  indexOf,
+} from './model'
 
 describe('newFieldsSorted()', () => {
   it('should create a single-cell board, with a single null field', () => {
@@ -69,6 +76,27 @@ describe('posOf()', () => {
   ])('when index=%i and size=%i it should return %o', (i, s, expected) => {
     const result = posOf(i, s)
     expect(result).toEqual(expected)
+  })
+})
+
+describe('indexOf()', () => {
+  test.each([
+    [{ x: 0, y: 0 }, 2, 0],
+    [{ x: 1, y: 0 }, 2, 1],
+    [{ x: 0, y: 1 }, 2, 2],
+    [{ x: 1, y: 1 }, 2, 3],
+    [{ x: 0, y: 0 }, 3, 0],
+    [{ x: 1, y: 0 }, 3, 1],
+    [{ x: 2, y: 0 }, 3, 2],
+    [{ x: 0, y: 1 }, 3, 3],
+    [{ x: 1, y: 1 }, 3, 4],
+    [{ x: 2, y: 1 }, 3, 5],
+    [{ x: 0, y: 2 }, 3, 6],
+    [{ x: 1, y: 2 }, 3, 7],
+    [{ x: 2, y: 2 }, 3, 8],
+  ])('when pos=%o and size=%i it should return %i', (pos, size, expected) => {
+    const result = indexOf(pos, size)
+    expect(result).toBe(expected)
   })
 })
 
