@@ -6,7 +6,7 @@ import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
 import { Lamp } from './Lamp'
-import { useGlobalKeyDown } from './useGlobalKeydown'
+import { useGlobalKeyDown } from './useGlobalKeyDown'
 
 const minSize = 3
 const maxSize = 9
