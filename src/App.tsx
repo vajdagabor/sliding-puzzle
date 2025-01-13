@@ -6,6 +6,7 @@ import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
 import { Lamp } from './Lamp'
+import { useGlobalKeyDown } from './useGlobalKeydown'
 
 const minSize = 3
 const maxSize = 9
@@ -17,10 +18,37 @@ const initialState: State = {
 
 export function App() {
   const [{ size, fields }, dispatch] = useReducer(reducer, initialState)
+
   const sorted = isSorted(fields)
 
+  const handleKeyDown = function (event: KeyboardEvent) {
+    switch (event.key) {
+      case 'ArrowDown': {
+        dispatch({ type: 'KEYDOWN' })
+        break
+      }
+
+      case 'ArrowUp': {
+        dispatch({ type: 'KEYUP' })
+        break
+      }
+
+      case 'ArrowLeft': {
+        dispatch({ type: 'KEYLEFT' })
+        break
+      }
+
+      case 'ArrowRight': {
+        dispatch({ type: 'KEYRIGHT' })
+        break
+      }
+    }
+  }
+
+  useGlobalKeyDown(handleKeyDown)
+
   function handleFieldClick(index: number) {
-    dispatch({ type: 'MOVE', index })
+    dispatch({ type: 'FIELDCLICK', index })
   }
 
   function handleShuffleClick() {
