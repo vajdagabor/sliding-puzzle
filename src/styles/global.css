@@ -144,6 +144,11 @@ main {
     &:hover {
       border: 2px solid var(--color-strong);
     }
+
+    &[data-correct='true'] {
+      transform: scale(0.8);
+      box-shadow: none;
+    }
   }
 
   &:not([data-value]) {

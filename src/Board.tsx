@@ -1,5 +1,5 @@
 import { Field } from './Field'
-import { Field as FieldType } from './model'
+import { Field as FieldType, isCorrect } from './model'
 
 interface Props {
   size: number
@@ -14,8 +14,13 @@ export function Board({ size, fields, onFieldClick }: Props) {
 
   return (
     <div className="Board" style={boardStyle}>
-      {fields.map((field, i) => (
-        <Field key={field} value={field} onClick={() => onFieldClick(i)} />
+      {fields.map((value, i) => (
+        <Field
+          key={value}
+          value={value}
+          isCorrect={isCorrect(size, i, value)}
+          onClick={() => onFieldClick(i)}
+        />
       ))}
     </div>
   )

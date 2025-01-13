@@ -20,6 +20,13 @@ function isNumberArray(arr: Field[]): arr is number[] {
   return arr.every(v => typeof v === 'number')
 }
 
+export function isCorrect(size: number, index: number, value: Field) {
+  if (typeof value === 'number' && index === value - 1) return true
+  if (value === null && index === size ** 2 - 1) return true
+
+  return false
+}
+
 export function isSorted(fs: Field[]) {
   const fields = fs.slice(0, fs.length - 1)
   if (!isNumberArray(fields)) return false
