@@ -1,8 +1,16 @@
-import { Field, move, moveEmpty, newFields, newFieldsShuffled } from './model'
+import {
+  Field,
+  Direction,
+  move,
+  moveEmpty,
+  newFields,
+  newFieldsShuffled,
+} from './model'
 
 export type State = {
   size: number
   fields: Field[]
+  playerDirection: Direction
 }
 
 export type Action =
@@ -43,6 +51,7 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         fields: moveEmpty('down', state.size, state.fields),
+        playerDirection: 'down',
       }
     }
 
@@ -50,6 +59,7 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         fields: moveEmpty('up', state.size, state.fields),
+        playerDirection: 'up',
       }
     }
 
@@ -57,6 +67,7 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         fields: moveEmpty('left', state.size, state.fields),
+        playerDirection: 'left',
       }
     }
 
@@ -64,6 +75,7 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         fields: moveEmpty('right', state.size, state.fields),
+        playerDirection: 'right',
       }
     }
 

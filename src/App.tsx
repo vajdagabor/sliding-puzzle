@@ -14,10 +14,14 @@ const initialSize = 3
 const initialState: State = {
   size: initialSize,
   fields: newFields(initialSize),
+  playerDirection: 'down',
 }
 
 export function App() {
-  const [{ size, fields }, dispatch] = useReducer(reducer, initialState)
+  const [{ size, fields, playerDirection }, dispatch] = useReducer(
+    reducer,
+    initialState
+  )
 
   const sorted = isSorted(fields)
 
@@ -77,7 +81,12 @@ export function App() {
         <Button label="Shuffle" onClick={handleShuffleClick} />
       </Header>
       <main>
-        <Board size={size} fields={fields} onFieldClick={handleFieldClick} />
+        <Board
+          size={size}
+          fields={fields}
+          playerDirection={playerDirection}
+          onFieldClick={handleFieldClick}
+        />
       </main>
     </>
   )

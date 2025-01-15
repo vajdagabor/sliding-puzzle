@@ -151,6 +151,7 @@ main {
     }
   }
 
+  /* Player */
   &:not([data-value]) {
     box-shadow: none;
     background-color: transparent;
@@ -161,6 +162,16 @@ main {
       justify-content: center;
       align-items: center;
       font-size: 1.6em;
+    }
+
+    &[data-direction='up'] {
+      transform: rotate(180deg);
+    }
+    &[data-direction='left'] {
+      transform: rotate(90deg);
+    }
+    &[data-direction='right'] {
+      transform: rotate(270deg);
     }
   }
 }
