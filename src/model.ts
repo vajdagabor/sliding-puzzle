@@ -92,7 +92,7 @@ export function moveEmpty(
 
 export function swap(index1: number, index2: number, fields: Field[]): Field[] {
   const fs = [...fields]
-  ;[fields[index1], fields[index2]] = [fields[index2], fields[index1]]
+  ;[fs[index1], fs[index2]] = [fs[index2], fs[index1]]
 
   return fs
 }
