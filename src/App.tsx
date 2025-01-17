@@ -1,5 +1,5 @@
 import { useReducer } from 'react'
-import { State, reducer, MoveActionTypes } from './reducer'
+import { State, reducer, MoveActionType } from './reducer'
 import { Board } from './Board'
 import {
   makeFieldRotations,
@@ -30,7 +30,7 @@ export function App() {
   const sorted = isSorted(fields)
 
   const handleKeyDown = function (event: KeyboardEvent) {
-    const actionMap: Record<string, MoveActionTypes> = {
+    const actionMap: Record<string, MoveActionType> = {
       ArrowDown: 'KEYDOWN',
       ArrowUp: 'KEYUP',
       ArrowLeft: 'KEYLEFT',
