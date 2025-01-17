@@ -1,14 +1,15 @@
 import { Field } from './Field'
-import { Field as FieldType, Direction, isCorrect } from './model'
+import { Field as FieldType, Direction, isCorrect, FieldRotationMap } from './model'
 
 interface Props {
   size: number
   fields: FieldType[]
+  fieldRotations: FieldRotationMap
   playerDirection: Direction
   onFieldClick: (index: number) => void
 }
 
-export function Board({ size, fields, playerDirection, onFieldClick }: Props) {
+export function Board({ size, fields, fieldRotations, playerDirection, onFieldClick }: Props) {
   const boardStyle = {
     '--board-size': size,
   } as React.CSSProperties
@@ -19,7 +20,8 @@ export function Board({ size, fields, playerDirection, onFieldClick }: Props) {
         <Field
           key={value}
           value={value}
-          isCorrect={isCorrect(size, i, value)}
+          rotation={fieldRotations.get(value)}
+          isCorrect={isCorrect(i, value)}
           direction={playerDirection}
           onClick={() => onFieldClick(i)}
         />

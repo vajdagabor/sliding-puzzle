@@ -1,7 +1,12 @@
 import { useReducer } from 'react'
-import { State, reducer } from './reducer'
+import { State, reducer, MoveActionTypes } from './reducer'
 import { Board } from './Board'
-import { isSorted, newFields } from './model'
+import {
+  makeFieldRotations,
+  isSorted,
+  newFields,
+  newFieldsShuffled,
+} from './model'
 import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
@@ -14,38 +19,28 @@ const initialSize = 3
 const initialState: State = {
   size: initialSize,
   fields: newFields(initialSize),
+  fieldRotations: new Map(),
   playerDirection: 'down',
 }
 
 export function App() {
-  const [{ size, fields, playerDirection }, dispatch] = useReducer(
-    reducer,
-    initialState
-  )
+  const [{ size, fields, fieldRotations, playerDirection }, dispatch] =
+    useReducer(reducer, initialState)
 
   const sorted = isSorted(fields)
 
   const handleKeyDown = function (event: KeyboardEvent) {
-    switch (event.key) {
-      case 'ArrowDown': {
-        dispatch({ type: 'KEYDOWN' })
-        break
-      }
+    const actionMap: Record<string, MoveActionTypes> = {
+      ArrowDown: 'KEYDOWN',
+      ArrowUp: 'KEYUP',
+      ArrowLeft: 'KEYLEFT',
+      ArrowRight: 'KEYRIGHT',
+    }
 
-      case 'ArrowUp': {
-        dispatch({ type: 'KEYUP' })
-        break
-      }
+    const actionType = actionMap[event.key]
 
-      case 'ArrowLeft': {
-        dispatch({ type: 'KEYLEFT' })
-        break
-      }
-
-      case 'ArrowRight': {
-        dispatch({ type: 'KEYRIGHT' })
-        break
-      }
+    if (actionType) {
+      dispatch({ type: actionType })
     }
   }
 
@@ -56,7 +51,10 @@ export function App() {
   }
 
   function handleShuffleClick() {
-    dispatch({ type: 'SHUFFLE' })
+    const shuffledFields = newFieldsShuffled(size)
+    const fieldRotations = makeFieldRotations(shuffledFields)
+
+    dispatch({ type: 'SHUFFLE', shuffledFields, fieldRotations })
   }
 
   function shrink() {
@@ -84,6 +82,7 @@ export function App() {
         <Board
           size={size}
           fields={fields}
+          fieldRotations={fieldRotations}
           playerDirection={playerDirection}
           onFieldClick={handleFieldClick}
         />

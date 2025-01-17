@@ -1,6 +1,16 @@
 export type Field = number | null
 export type Pos = { x: number; y: number }
 export type Direction = 'left' | 'right' | 'up' | 'down'
+export type FieldRotationMap = Map<Field, number>
+
+const maxRotation = 10
+
+const moveConfig: Record<Direction, { axis: 'x' | 'y'; delta: 1 | -1 }> = {
+  left: { axis: 'x', delta: -1 },
+  right: { axis: 'x', delta: 1 },
+  up: { axis: 'y', delta: -1 },
+  down: { axis: 'y', delta: 1 },
+}
 
 export function newFields(size: number): Field[] {
   const length = size ** 2
@@ -20,9 +30,31 @@ function isNumberArray(arr: Field[]): arr is number[] {
   return arr.every(v => typeof v === 'number')
 }
 
-export function isCorrect(size: number, index: number, value: Field) {
+export function makeFieldRotations(fields: Field[]): FieldRotationMap {
+  return fields.reduce((map, value, index) => {
+    if (value === null) return map
+    if (isCorrect(index, value)) return map
+
+    map.set(value, newFieldRotation(index, value))
+
+    return map
+  }, new Map())
+}
+
+export function newFieldRotation(index: number, value: Field): number {
+  if (value === null) return 0
+  if (isCorrect(index, value)) return 0
+
+  return randomAngle()
+}
+
+export function randomAngle() {
+  return Math.random() * maxRotation * 2 - maxRotation
+}
+
+export function isCorrect(index: number, value: Field) {
   if (typeof value === 'number' && index === value - 1) return true
-  if (value === null && index === size ** 2 - 1) return true
+  if (value === null) return true
 
   return false
 }
@@ -34,21 +66,24 @@ export function isSorted(fs: Field[]) {
   return fields.every((v, i, arr) => i === 0 || arr[i - 1] <= v)
 }
 
-type PosOf = (index: number, size: number) => Pos
-export const posOf: PosOf = (index, size) => {
+export function posOf(index: number, size: number): Pos {
   return { x: index % size, y: Math.floor(index / size) }
 }
 
-type IndexOf = (pos: Pos, size: number) => number
-export const indexOf: IndexOf = (pos, size) => pos.y * size + pos.x
+export function indexOf(pos: Pos, size: number): number {
+  return pos.y * size + pos.x
+}
+
+export function valueOf(pos: Pos, size: number, fields: Field[]): Field {
+  return fields[indexOf(pos, size)]
+}
 
 const isSameRow = (p1: Pos, p2: Pos) => p1.y === p2.y
 const isSameCol = (p1: Pos, p2: Pos) => p1.x === p2.x
 const areAdjacentLines = (p1: Pos, p2: Pos) => Math.abs(p1.y - p2.y) === 1
 const areAdjacentCols = (p1: Pos, p2: Pos) => Math.abs(p1.x - p2.x) === 1
 
-type CanMove = (index: number, size: number, fields: Field[]) => boolean
-export const canMove: CanMove = (index, size, fields) => {
+export function canMove(index: number, size: number, fields: Field[]): boolean {
   const gap = posOf(findNullIndex(fields), size)
   const p = posOf(index, size)
 
@@ -58,11 +93,30 @@ export const canMove: CanMove = (index, size, fields) => {
   )
 }
 
-type Move = (index: number, size: number, fields: Field[]) => Field[]
-export const move: Move = (index, size, fields) => {
-  if (!canMove(index, size, fields)) return fields
+export function directionFromEmpty(
+  index: number,
+  size: number,
+  fields: Field[]
+): Direction | undefined {
+  const pos = posOf(index, size)
 
-  return swapWithNull(index, fields)
+  if (valueOf({ ...pos, x: pos.x - 1 }, size, fields) === null) return 'right'
+  if (valueOf({ ...pos, x: pos.x + 1 }, size, fields) === null) return 'left'
+  if (valueOf({ ...pos, y: pos.y - 1 }, size, fields) === null) return 'down'
+  if (valueOf({ ...pos, y: pos.y + 1 }, size, fields) === null) return 'up'
+
+  return undefined
+}
+
+export function movePiece(
+  index: number,
+  size: number,
+  fields: Field[]
+): Field[] {
+  const direction = directionFromEmpty(index, size, fields)
+  if (direction === undefined) return fields
+
+  return moveEmpty(direction, size, fields)
 }
 
 export function moveEmpty(
@@ -70,24 +124,32 @@ export function moveEmpty(
   size: number,
   fields: Field[]
 ): Field[] {
+  const pieceIndex = getAdjacentIndex(dir, size, fields)
+  if (pieceIndex === undefined) return fields
+
   const nullPos = findNullPos(size, fields)
-
-  const moveConfig: Record<Direction, { axis: 'x' | 'y'; delta: 1 | -1 }> = {
-    left: { axis: 'x', delta: -1 },
-    right: { axis: 'x', delta: 1 },
-    up: { axis: 'y', delta: -1 },
-    down: { axis: 'y', delta: 1 },
-  }
-  const config = moveConfig[dir]
-  const edgeIndex = config.delta === 1 ? size - 1 : 0
-
-  if (nullPos[config.axis] === edgeIndex) return fields
-
-  const piecePos = {...nullPos, [config.axis]: nullPos[config.axis] + config.delta}
-  const pieceIndex = indexOf(piecePos, size)
   const nullIndex = indexOf(nullPos, size)
 
   return swap(nullIndex, pieceIndex, fields)
+}
+
+export function getAdjacentIndex(
+  dir: Direction,
+  size: number,
+  fields: Field[]
+): number | undefined {
+  const config = moveConfig[dir]
+  const edgeIndex = config.delta === 1 ? size - 1 : 0
+  const nullPos = findNullPos(size, fields)
+
+  if (nullPos[config.axis] === edgeIndex) return undefined
+
+  const piecePos = {
+    ...nullPos,
+    [config.axis]: nullPos[config.axis] + config.delta,
+  }
+
+  return indexOf(piecePos, size)
 }
 
 export function swap(index1: number, index2: number, fields: Field[]): Field[] {
