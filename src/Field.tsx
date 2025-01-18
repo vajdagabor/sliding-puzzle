@@ -25,7 +25,7 @@ export function Field({
       style={style}
       data-value={value}
       data-correct={isCorrect}
-      data-direction={direction ? direction : undefined}
+      data-direction={value === null && direction ? direction : undefined}
       onClick={onClick}
     >
       {value}

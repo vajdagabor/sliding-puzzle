@@ -5,6 +5,7 @@ import {
   moveEmpty,
   newFields,
   directionFromEmpty,
+  getAdjacentIndex,
 } from './model'
 
 export type State = {
@@ -24,11 +25,11 @@ export type Action =
       shuffledFields: Field[]
       fieldRotations: FieldRotationMap
     }
-  | { type: 'FIELDCLICK'; index: number }
-  | { type: 'KEYDOWN' }
-  | { type: 'KEYUP' }
-  | { type: 'KEYLEFT' }
-  | { type: 'KEYRIGHT' }
+  | { type: 'FIELDCLICK'; index: number; rotation: number }
+  | { type: 'KEYDOWN'; rotation: number }
+  | { type: 'KEYUP'; rotation: number }
+  | { type: 'KEYLEFT'; rotation: number }
+  | { type: 'KEYRIGHT'; rotation: number }
 
 export type A<T> = Extract<Action, { type: T }>
 
@@ -78,14 +79,21 @@ function fieldClickReducer(state: State, action: A<'FIELDCLICK'>): State {
   if (!dir) return state
 
   const moveActionType = actionByDirection(dir)
-  return moveReducer(state, { type: moveActionType })
+  return moveReducer(state, { type: moveActionType, rotation: action.rotation })
 }
 
 function moveReducer(state: State, action: A<MoveActionType>): State {
   const dir = directionByActionType(action.type)
+  const fieldIndex = getAdjacentIndex(dir, state.size, state.fields)
+  const fieldValue = fieldIndex ? state.fields[fieldIndex] : undefined
+  const newRotations = fieldValue
+    ? new Map(state.fieldRotations).set(fieldValue, action.rotation)
+    : state.fieldRotations
+
   return {
     ...state,
     fields: moveEmpty(dir, state.size, state.fields),
+    fieldRotations: newRotations,
     playerDirection: dir,
   }
 }

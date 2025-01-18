@@ -6,6 +6,7 @@ import {
   isSorted,
   newFields,
   newFieldsShuffled,
+  randomAngle,
 } from './model'
 import { Header } from './Header'
 import { Counter } from './Counter'
@@ -40,14 +41,14 @@ export function App() {
     const actionType = actionMap[event.key]
 
     if (actionType) {
-      dispatch({ type: actionType })
+      dispatch({ type: actionType, rotation: randomAngle() })
     }
   }
 
   useGlobalKeyDown(handleKeyDown)
 
   function handleFieldClick(index: number) {
-    dispatch({ type: 'FIELDCLICK', index })
+    dispatch({ type: 'FIELDCLICK', index, rotation: randomAngle() })
   }
 
   function handleShuffleClick() {

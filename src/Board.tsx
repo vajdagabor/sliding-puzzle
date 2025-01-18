@@ -18,7 +18,7 @@ export function Board({ size, fields, fieldRotations, playerDirection, onFieldCl
     <div className="Board" style={boardStyle}>
       {fields.map((value, i) => (
         <Field
-          key={value}
+          key={Number(value)}
           value={value}
           rotation={fieldRotations.get(value)}
           isCorrect={isCorrect(i, value)}
