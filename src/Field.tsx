@@ -1,4 +1,4 @@
-import { Direction, Field as FieldType } from './model'
+import { Direction, Field as FieldType } from './types'
 
 interface Props {
   value: FieldType

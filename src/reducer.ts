@@ -1,12 +1,17 @@
+import { Direction, Field, FieldRotationMap } from './types'
 import {
-  Field,
-  FieldRotationMap,
-  Direction,
   moveEmpty,
   newFields,
   directionFromEmpty,
   getAdjacentIndex,
+  makeFieldRotations,
+  newFieldsShuffled,
+  randomAngle,
 } from './model'
+
+// -----
+// TYPES
+// -----
 
 export type State = {
   size: number
@@ -18,6 +23,7 @@ export type State = {
 export type MoveActionType = 'KEYDOWN' | 'KEYUP' | 'KEYLEFT' | 'KEYRIGHT'
 
 export type Action =
+  | { type: 'DEFAULT' }
   | { type: 'GROW' }
   | { type: 'SHRINK' }
   | {
@@ -33,11 +39,17 @@ export type Action =
 
 export type A<T> = Extract<Action, { type: T }>
 
+// -------
+// REDUCER
+// -------
+
 export const reducer: React.Reducer<State, Action> = function reducer(
   state,
   action
 ) {
   switch (action.type) {
+    case 'DEFAULT':
+      return state
     case 'GROW':
       return sizeReducer(1, state)
     case 'SHRINK':
@@ -51,11 +63,8 @@ export const reducer: React.Reducer<State, Action> = function reducer(
     case 'FIELDCLICK':
       return fieldClickReducer(state, action)
     case 'KEYUP':
-      return moveReducer(state, action)
     case 'KEYDOWN':
-      return moveReducer(state, action)
     case 'KEYLEFT':
-      return moveReducer(state, action)
     case 'KEYRIGHT':
       return moveReducer(state, action)
 
@@ -63,6 +72,38 @@ export const reducer: React.Reducer<State, Action> = function reducer(
       return state
   }
 }
+
+// -------
+// ACTIONS
+// -------
+
+export function shuffleFields(size: number): A<'SHUFFLE'> {
+  const shuffledFields = newFieldsShuffled(size)
+  const fieldRotations = makeFieldRotations(shuffledFields)
+
+  return { type: 'SHUFFLE', shuffledFields, fieldRotations }
+}
+
+export function movePiece(index: number): A<'FIELDCLICK'> {
+  return { type: 'FIELDCLICK', index, rotation: randomAngle() }
+}
+
+export function globalKeyDown(
+  event: KeyboardEvent
+): A<MoveActionType> | A<'DEFAULT'> {
+  const rotation = randomAngle()
+
+  if (event.key === 'ArrowDown') return { type: 'KEYDOWN', rotation }
+  if (event.key === 'ArrowUp') return { type: 'KEYUP', rotation }
+  if (event.key === 'ArrowLeft') return { type: 'KEYLEFT', rotation }
+  if (event.key === 'ArrowRight') return { type: 'KEYRIGHT', rotation }
+
+  return { type: 'DEFAULT' }
+}
+
+// -----------------
+// REDUCER FUNCTIONS
+// -----------------
 
 function sizeReducer(delta: number, state: State): State {
   const size = state.size + delta
@@ -76,6 +117,7 @@ function sizeReducer(delta: number, state: State): State {
 
 function fieldClickReducer(state: State, action: A<'FIELDCLICK'>): State {
   const dir = directionFromEmpty(action.index, state.size, state.fields)
+
   if (!dir) return state
 
   const moveActionType = actionByDirection(dir)
@@ -97,6 +139,10 @@ function moveReducer(state: State, action: A<MoveActionType>): State {
     playerDirection: dir,
   }
 }
+
+// -------
+// HELPERS
+// -------
 
 export function actionByDirection(dir: Direction): MoveActionType {
   const directionMap: Record<Direction, MoveActionType> = {

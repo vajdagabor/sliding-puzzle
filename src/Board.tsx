@@ -1,18 +1,27 @@
+import { Field as FieldType, Direction, FieldRotationMap } from './types'
 import { Field } from './Field'
-import { Field as FieldType, Direction, isCorrect, FieldRotationMap } from './model'
+import { isCorrect } from './model'
+import { movePiece } from './reducer'
+import { useDispatch } from './store'
 
 interface Props {
   size: number
   fields: FieldType[]
   fieldRotations: FieldRotationMap
   playerDirection: Direction
-  onFieldClick: (index: number) => void
 }
 
-export function Board({ size, fields, fieldRotations, playerDirection, onFieldClick }: Props) {
+export function Board({
+  size,
+  fields,
+  fieldRotations,
+  playerDirection,
+}: Props) {
   const boardStyle = {
     '--board-size': size,
   } as React.CSSProperties
+
+  const dispatch = useDispatch()
 
   return (
     <div className="Board" style={boardStyle}>
@@ -23,7 +32,7 @@ export function Board({ size, fields, fieldRotations, playerDirection, onFieldCl
           rotation={fieldRotations.get(value)}
           isCorrect={isCorrect(i, value)}
           direction={playerDirection}
-          onClick={() => onFieldClick(i)}
+          onClick={() => dispatch(movePiece(i))}
         />
       ))}
     </div>

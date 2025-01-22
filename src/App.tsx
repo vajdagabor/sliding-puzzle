@@ -1,70 +1,21 @@
-import { useReducer } from 'react'
-import { State, reducer, MoveActionType } from './reducer'
 import { Board } from './Board'
-import {
-  makeFieldRotations,
-  isSorted,
-  newFields,
-  newFieldsShuffled,
-  randomAngle,
-} from './model'
+import { isSorted } from './model'
 import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
 import { Lamp } from './Lamp'
 import { useGlobalKeyDown } from './useGlobalKeyDown'
-
-const minSize = 3
-const maxSize = 9
-const initialSize = 3
-const initialState: State = {
-  size: initialSize,
-  fields: newFields(initialSize),
-  fieldRotations: new Map(),
-  playerDirection: 'down',
-}
+import { minSize, maxSize } from './config'
+import { useDispatch, useStore } from './store'
+import { globalKeyDown, shuffleFields } from './reducer'
 
 export function App() {
-  const [{ size, fields, fieldRotations, playerDirection }, dispatch] =
-    useReducer(reducer, initialState)
+  const { size, fields, fieldRotations, playerDirection } = useStore()
+  const dispatch = useDispatch()
 
   const sorted = isSorted(fields)
 
-  const handleKeyDown = function (event: KeyboardEvent) {
-    const actionMap: Record<string, MoveActionType> = {
-      ArrowDown: 'KEYDOWN',
-      ArrowUp: 'KEYUP',
-      ArrowLeft: 'KEYLEFT',
-      ArrowRight: 'KEYRIGHT',
-    }
-
-    const actionType = actionMap[event.key]
-
-    if (actionType) {
-      dispatch({ type: actionType, rotation: randomAngle() })
-    }
-  }
-
-  useGlobalKeyDown(handleKeyDown)
-
-  function handleFieldClick(index: number) {
-    dispatch({ type: 'FIELDCLICK', index, rotation: randomAngle() })
-  }
-
-  function handleShuffleClick() {
-    const shuffledFields = newFieldsShuffled(size)
-    const fieldRotations = makeFieldRotations(shuffledFields)
-
-    dispatch({ type: 'SHUFFLE', shuffledFields, fieldRotations })
-  }
-
-  function shrink() {
-    dispatch({ type: 'SHRINK' })
-  }
-
-  function grow() {
-    dispatch({ type: 'GROW' })
-  }
+  useGlobalKeyDown(event => dispatch(globalKeyDown(event)))
 
   return (
     <>
@@ -74,10 +25,10 @@ export function App() {
           n={size}
           min={minSize}
           max={maxSize}
-          onDecrement={shrink}
-          onIncrement={grow}
+          onDecrement={() => dispatch({ type: 'SHRINK' })}
+          onIncrement={() => dispatch({ type: 'GROW' })}
         />
-        <Button label="Shuffle" onClick={handleShuffleClick} />
+        <Button label="Shuffle" onClick={() => dispatch(shuffleFields(size))} />
       </Header>
       <main>
         <Board
@@ -85,7 +36,6 @@ export function App() {
           fields={fields}
           fieldRotations={fieldRotations}
           playerDirection={playerDirection}
-          onFieldClick={handleFieldClick}
         />
       </main>
     </>

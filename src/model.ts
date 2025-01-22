@@ -1,9 +1,5 @@
-export type Field = number | null
-export type Pos = { x: number; y: number }
-export type Direction = 'left' | 'right' | 'up' | 'down'
-export type FieldRotationMap = Map<Field, number>
-
-const maxRotation = 10
+import { Direction, Field, FieldRotationMap, Pos } from './types'
+import { maxRotation } from './config'
 
 const moveConfig: Record<Direction, { axis: 'x' | 'y'; delta: 1 | -1 }> = {
   left: { axis: 'x', delta: -1 },
