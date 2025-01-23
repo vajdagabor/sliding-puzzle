@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { Button } from './Button'
 
 interface Props {
@@ -8,7 +9,8 @@ interface Props {
   onIncrement?: React.MouseEventHandler
 }
 
-export function Counter({ n = 0, min, max, onDecrement, onIncrement }: Props) {
+export const Counter = memo(Counter_)
+function Counter_({ n = 0, min, max, onDecrement, onIncrement }: Props) {
   const canDecrease = min === undefined ? true : n > min
   const canIncrease = max === undefined ? true : n < max
 

@@ -12,6 +12,7 @@
   font-style: inherit;
   font-weight: inherit;
   line-height: inherit;
+  user-select: inherit;
 }
 
 html {

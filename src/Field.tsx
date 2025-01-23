@@ -1,22 +1,28 @@
-import { Direction, Field as FieldType } from './types'
+import { memo } from 'react'
+import { Field as FieldType } from './types'
 
 interface Props {
   value: FieldType
+  index: number
   isCorrect?: boolean
-  direction?: Direction
   rotation?: number
-  onClick: React.MouseEventHandler
+  onClick: (index: number) => void
 }
 
-export function Field({
+export const Field = memo(Field_)
+function Field_({
   value,
+  index,
   isCorrect = false,
-  direction,
   rotation = 0,
   onClick,
 }: Props) {
   const style: Record<string, string> = {
     '--rotation': `${rotation}deg`,
+  }
+
+  const handleClick: React.MouseEventHandler = () => {
+    onClick(index)
   }
 
   return (
@@ -25,8 +31,7 @@ export function Field({
       style={style}
       data-value={value}
       data-correct={isCorrect}
-      data-direction={value === null && direction ? direction : undefined}
-      onClick={onClick}
+      onClick={handleClick}
     >
       {value}
     </div>

@@ -1,8 +1,12 @@
+import { memo } from 'react'
+
 interface Props {
   label: string
   isOn: boolean
 }
-export function Lamp({ label, isOn = false }: Props) {
+
+export const Lamp = memo(Lamp_)
+function Lamp_({ label, isOn = false }: Props) {
   return (
     <div className="Lamp" data-state={isOn ? 'on' : 'off'}>
       <span className="Lamp__Indicator" aria-hidden="true"></span>
