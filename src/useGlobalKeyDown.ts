@@ -2,8 +2,8 @@ import { useEffect } from 'react'
 
 export function useGlobalKeyDown(handler: (event: KeyboardEvent) => void) {
   useEffect(() => {
-    window.addEventListener('keydown', handler)
+    globalThis.addEventListener('keydown', handler)
 
-    return () => window.removeEventListener('keydown', handler)
+    return () => globalThis.removeEventListener('keydown', handler)
   }, [])
 }
