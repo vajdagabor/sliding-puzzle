@@ -1,4 +1,4 @@
-import { Direction, Field, FieldRotationMap, Pos } from './types'
+import { Direction, directions, Field, FieldRotationMap, Pos } from './types'
 import { maxRotation } from './config'
 
 const moveConfig: Record<Direction, { axis: 'x' | 'y'; delta: 1 | -1 }> = {
@@ -19,7 +19,7 @@ export function newFields(size: number): Field[] {
 }
 
 export function newFieldsShuffled(size: number): Field[] {
-  return shuffle(newFields(size))
+  return shuffle(size, newFields(size))
 }
 
 function isNumberArray(arr: Field[]): arr is number[] {
@@ -148,6 +148,27 @@ export function getAdjacentIndex(
   return indexOf(piecePos, size)
 }
 
+export function randomMovableIndex(size: number, fields: Field[]): number {
+  const shift = random(3)
+  const shiftedDirs = rotate(directions, shift)
+
+  for (const dir of shiftedDirs) {
+    const index = getAdjacentIndex(dir, size, fields)
+    if (index !== undefined) return index
+  }
+
+  throw new Error('Could not find movable field.')
+}
+
+export function randomMove(size: number, fields: Field[]): Field[] {
+  return swapWithNull(randomMovableIndex(size, fields), fields)
+}
+
+export function rotate<T>(arr: T[], shift: number): T[] {
+  const l = arr.length
+  return arr.map((_, i, ds) => ds[(i + shift) % l])
+}
+
 export function swap(index1: number, index2: number, fields: Field[]): Field[] {
   const fs = [...fields]
   ;[fs[index1], fs[index2]] = [fs[index2], fs[index1]]
@@ -176,14 +197,16 @@ export function random(max: number): number {
   return Math.floor(Math.random() * (max + 1))
 }
 
-export function shuffle<T>(arr: T[]): T[] {
-  const result = [...arr]
-  const l = result.length
+export function pick<T>(arr: T[]): T {
+  return arr[random(arr.length - 1)]
+}
 
-  for (let i = 0; i < l; i++) {
-    const j = random(l - 1)
-    ;[result[i], result[j]] = [result[j], result[i]]
+export function shuffle(size: number, fields: Field[]): Field[] {
+  const steps = size ** 4
+  let shuffled = fields
+  for (let i = 0; i < steps; i++) {
+    shuffled = randomMove(size, shuffled)
   }
 
-  return result
+  return shuffled
 }
