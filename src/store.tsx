@@ -8,6 +8,8 @@ const initialState: State = {
   fields: newFields(initialSize),
   fieldRotations: new Map(),
   playerDirection: 'down',
+  isShuffling: false,
+  shuffleSteps: 0
 }
 
 const StoreContext = createContext<State>(initialState)

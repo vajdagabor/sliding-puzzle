@@ -7,6 +7,8 @@ import {
   makeFieldRotations,
   newFieldsShuffled,
   randomAngle,
+  randomValidDirection,
+  shuffleSteps,
 } from './model'
 
 // -----
@@ -18,6 +20,8 @@ export type State = {
   fields: Field[]
   fieldRotations: FieldRotationMap
   playerDirection: Direction
+  isShuffling: boolean
+  shuffleSteps: number
 }
 
 export type MoveActionType = 'KEYDOWN' | 'KEYUP' | 'KEYLEFT' | 'KEYRIGHT'
@@ -31,6 +35,9 @@ export type Action =
       shuffledFields: Field[]
       fieldRotations: FieldRotationMap
     }
+  | { type: 'START_SHUFFLING' }
+  | { type: 'END_SHUFFLING' }
+  | { type: 'DECREMENT_SHUFFLE_STEPS' }
   | { type: 'FIELDCLICK'; index: number; rotation: number }
   | { type: 'KEYDOWN'; rotation: number }
   | { type: 'KEYUP'; rotation: number }
@@ -60,6 +67,23 @@ export const reducer: React.Reducer<State, Action> = function reducer(
         fields: action.shuffledFields,
         fieldRotations: action.fieldRotations,
       }
+    case 'START_SHUFFLING':
+      const { size, shuffleSteps: steps } = state
+      return {
+        ...state,
+        isShuffling: true,
+        shuffleSteps: steps > 0 ? steps : shuffleSteps(size),
+      }
+    case 'END_SHUFFLING':
+      return {
+        ...state,
+        isShuffling: false,
+      }
+    case 'DECREMENT_SHUFFLE_STEPS':
+      return {
+        ...state,
+        shuffleSteps: Math.max(0, state.shuffleSteps - 1),
+      }
     case 'FIELDCLICK':
       return fieldClickReducer(state, action)
     case 'KEYUP':
@@ -82,6 +106,13 @@ export function shuffleFields(size: number): A<'SHUFFLE'> {
   const fieldRotations = makeFieldRotations(shuffledFields)
 
   return { type: 'SHUFFLE', shuffledFields, fieldRotations }
+}
+
+export function randomMove(size: number, fields: Field[]): A<MoveActionType> {
+  const dir = randomValidDirection(size, fields)
+  const moveActionType = actionByDirection(dir)
+
+  return { type: moveActionType, rotation: randomAngle() }
 }
 
 export function movePiece(index: number): A<'FIELDCLICK'> {
@@ -112,6 +143,9 @@ function sizeReducer(delta: number, state: State): State {
     size,
     fields: newFields(size),
     fieldRotations: new Map(),
+    isShuffling: false,
+    shuffleSteps: 0,
+    playerDirection: 'down'
   }
 }
 

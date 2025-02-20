@@ -148,6 +148,18 @@ export function getAdjacentIndex(
   return indexOf(piecePos, size)
 }
 
+export function randomValidDirection(size: number, fields: Field[]): Direction {
+  const shift = random(3)
+  const shiftedDirs = rotate(directions, shift)
+
+  for (const dir of shiftedDirs) {
+    const index = getAdjacentIndex(dir, size, fields)
+    if (index !== undefined) return dir
+  }
+
+  throw new Error('Could not find valid direction.')
+}
+
 export function randomMovableIndex(size: number, fields: Field[]): number {
   const shift = random(3)
   const shiftedDirs = rotate(directions, shift)
@@ -202,11 +214,15 @@ export function pick<T>(arr: T[]): T {
 }
 
 export function shuffle(size: number, fields: Field[]): Field[] {
-  const steps = size ** 4
+  const steps = shuffleSteps(size)
   let shuffled = fields
   for (let i = 0; i < steps; i++) {
     shuffled = randomMove(size, shuffled)
   }
 
   return shuffled
+}
+
+export function shuffleSteps(size: number) {
+  return size ** 4
 }
