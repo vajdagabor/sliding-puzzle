@@ -67,11 +67,6 @@ export function App() {
     [dispatch]
   )
 
-  const handleMoveClick = useCallback(
-    () => dispatch(randomMove(size, fields)),
-    [dispatch, size, fields]
-  )
-
   const handleFieldClick = useCallback(
     (index: number) => dispatch(movePiece(index)),
     [dispatch]
@@ -93,7 +88,6 @@ export function App() {
         ) : (
           <Button label="Shuffle" onClick={handleShuffleClick} />
         )}
-        <Button label="Move" onClick={handleMoveClick} />
       </Header>
       <main>
         <Board size={size}>
