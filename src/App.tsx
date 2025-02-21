@@ -5,14 +5,12 @@ import { Counter } from './Counter'
 import { Button } from './Button'
 import { Lamp } from './Lamp'
 import { useGlobalKeyDown } from './useGlobalKeyDown'
-import { minSize, maxSize } from './config'
+import { minSize, maxSize, shuffleDelay } from './config'
 import { useDispatch, useStore } from './store'
 import { globalKeyDown, movePiece, randomMove } from './reducer'
 import { useCallback, useEffect, useRef } from 'react'
 import { Field } from './Field'
 import { Player } from './Player'
-
-const SHUFFLE_DELAY = 1 // ms
 
 export function App() {
   const {
@@ -33,7 +31,7 @@ export function App() {
     if (isShuffling && shuffleSteps > 0) {
       shuffleTimeoutRef.current = setTimeout(() => {
         shuffleStep()
-      }, SHUFFLE_DELAY)
+      }, shuffleDelay)
     }
 
     return () => {
