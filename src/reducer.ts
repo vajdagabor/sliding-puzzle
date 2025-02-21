@@ -1,4 +1,5 @@
 import { Direction, Field, FieldRotationMap } from './types'
+import { sizes } from './config'
 import {
   moveEmpty,
   newFields,
@@ -30,6 +31,7 @@ export type Action =
   | { type: 'DEFAULT' }
   | { type: 'GROW' }
   | { type: 'SHRINK' }
+  | { type: 'SET_SIZE'; size: number }
   | {
       type: 'SHUFFLE'
       shuffledFields: Field[]
@@ -58,9 +60,11 @@ export const reducer: React.Reducer<State, Action> = function reducer(
     case 'DEFAULT':
       return state
     case 'GROW':
-      return sizeReducer(1, state)
+      return sizeReducer(state.size + 1, state)
     case 'SHRINK':
-      return sizeReducer(-1, state)
+      return sizeReducer(state.size - 1, state)
+    case 'SET_SIZE':
+      return sizeReducer(action.size, state)
     case 'SHUFFLE':
       return {
         ...state,
@@ -121,13 +125,18 @@ export function movePiece(index: number): A<'FIELDCLICK'> {
 
 export function globalKeyDown(
   event: KeyboardEvent
-): A<MoveActionType> | A<'DEFAULT'> {
+): A<MoveActionType> | A<'SET_SIZE'> | A<'DEFAULT'> {
   const rotation = randomAngle()
+  const key = event.key
 
-  if (event.key === 'ArrowDown') return { type: 'KEYDOWN', rotation }
-  if (event.key === 'ArrowUp') return { type: 'KEYUP', rotation }
-  if (event.key === 'ArrowLeft') return { type: 'KEYLEFT', rotation }
-  if (event.key === 'ArrowRight') return { type: 'KEYRIGHT', rotation }
+  if (key === 'ArrowDown') return { type: 'KEYDOWN', rotation }
+  if (key === 'ArrowUp') return { type: 'KEYUP', rotation }
+  if (key === 'ArrowLeft') return { type: 'KEYLEFT', rotation }
+  if (key === 'ArrowRight') return { type: 'KEYRIGHT', rotation }
+
+  if (sizes.includes(Number(key))) {
+    return { type: 'SET_SIZE', size: Number(key) }
+  }
 
   return { type: 'DEFAULT' }
 }
@@ -136,8 +145,7 @@ export function globalKeyDown(
 // REDUCER FUNCTIONS
 // -----------------
 
-function sizeReducer(delta: number, state: State): State {
-  const size = state.size + delta
+function sizeReducer(size: number, state: State): State {
   return {
     ...state,
     size,
@@ -145,7 +153,7 @@ function sizeReducer(delta: number, state: State): State {
     fieldRotations: new Map(),
     isShuffling: false,
     shuffleSteps: 0,
-    playerDirection: 'down'
+    playerDirection: 'down',
   }
 }
 
