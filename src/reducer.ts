@@ -82,6 +82,7 @@ export const reducer: React.Reducer<State, Action> = function reducer(
       return {
         ...state,
         isShuffling: false,
+        playerDirection: 'down',
       }
     case 'DECREMENT_SHUFFLE_STEPS':
       return {
