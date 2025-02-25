@@ -1,16 +1,5 @@
 import { createContext, useContext, useReducer } from 'react'
-import { newFields } from './model'
-import { Action, State, reducer } from './reducer'
-import { initialSize } from './config'
-
-const initialState: State = {
-  size: initialSize,
-  fields: newFields(initialSize),
-  fieldRotations: new Map(),
-  playerDirection: 'down',
-  isShuffling: false,
-  shuffleSteps: 0
-}
+import { Action, State, reducer, initialState } from './reducer'
 
 const StoreContext = createContext<State>(initialState)
 const DispatchContext = createContext<React.Dispatch<Action>>(() => {})

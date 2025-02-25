@@ -1,16 +1,25 @@
 import { Direction, Field, FieldRotationMap } from './types'
-import { sizes } from './config'
+import { sizes, initialSize } from './config'
 import {
   moveEmpty,
   newFields,
   directionFromEmpty,
   getAdjacentIndex,
-  makeFieldRotations,
-  newFieldsShuffled,
   randomAngle,
   randomValidDirection,
   shuffleSteps,
 } from './model'
+
+// ---------
+// CONSTANTS
+// ---------
+
+const keyMap: Record<string, Direction> = {
+  ArrowDown: 'down',
+  ArrowUp: 'up',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+}
 
 // -----
 // TYPES
@@ -25,28 +34,32 @@ export type State = {
   shuffleSteps: number
 }
 
-export type MoveActionType = 'KEYDOWN' | 'KEYUP' | 'KEYLEFT' | 'KEYRIGHT'
-
 export type Action =
-  | { type: 'DEFAULT' }
-  | { type: 'GROW' }
-  | { type: 'SHRINK' }
-  | { type: 'SET_SIZE'; size: number }
-  | {
-      type: 'SHUFFLE'
-      shuffledFields: Field[]
-      fieldRotations: FieldRotationMap
-    }
-  | { type: 'START_SHUFFLING' }
-  | { type: 'END_SHUFFLING' }
-  | { type: 'DECREMENT_SHUFFLE_STEPS' }
-  | { type: 'FIELDCLICK'; index: number; rotation: number }
-  | { type: 'KEYDOWN'; rotation: number }
-  | { type: 'KEYUP'; rotation: number }
-  | { type: 'KEYLEFT'; rotation: number }
-  | { type: 'KEYRIGHT'; rotation: number }
+  | { type: 'NOTHING' }
+  | { type: 'GROW_BUTTON_CLICKED' }
+  | { type: 'SHRINK_BUTTON_CLICKED' }
+  | { type: 'SHUFFLE_COMPLETED' }
+  | { type: 'SHUFFLE_BUTTON_CLICKED' }
+  | { type: 'SHUFFLE_MOVE_INITIATED'; direction: Direction; rotation: number }
+  | { type: 'STOP_BUTTON_CLICKED' }
+  | { type: 'PIECE_CLICKED'; index: number; rotation: number }
+  | { type: 'KEY_ARROW_PRESSED'; direction: Direction; rotation: number }
+  | { type: 'KEY_NUMERIC_PRESSED'; size: number }
 
 export type A<T> = Extract<Action, { type: T }>
+
+// -------------
+// INITIAL STATE
+// -------------
+
+export const initialState: State = {
+  size: initialSize,
+  fields: newFields(initialSize),
+  fieldRotations: new Map(),
+  playerDirection: 'down',
+  isShuffling: false,
+  shuffleSteps: 0,
+}
 
 // -------
 // REDUCER
@@ -57,89 +70,91 @@ export const reducer: React.Reducer<State, Action> = function reducer(
   action
 ) {
   switch (action.type) {
-    case 'DEFAULT':
+    case 'NOTHING':
       return state
-    case 'GROW':
+
+    case 'GROW_BUTTON_CLICKED':
       return sizeReducer(state.size + 1, state)
-    case 'SHRINK':
+
+    case 'SHRINK_BUTTON_CLICKED':
       return sizeReducer(state.size - 1, state)
-    case 'SET_SIZE':
+
+    case 'KEY_NUMERIC_PRESSED':
       return sizeReducer(action.size, state)
-    case 'SHUFFLE':
-      return {
-        ...state,
-        fields: action.shuffledFields,
-        fieldRotations: action.fieldRotations,
-      }
-    case 'START_SHUFFLING':
+
+    case 'SHUFFLE_BUTTON_CLICKED':
       const { size, shuffleSteps: steps } = state
       return {
         ...state,
         isShuffling: true,
         shuffleSteps: steps > 0 ? steps : shuffleSteps(size),
       }
-    case 'END_SHUFFLING':
+    case 'SHUFFLE_MOVE_INITIATED':
+      return shuffleMoveReducer(state, action)
+
+    case 'STOP_BUTTON_CLICKED':
+    case 'SHUFFLE_COMPLETED':
       return {
         ...state,
         isShuffling: false,
         playerDirection: 'down',
       }
-    case 'DECREMENT_SHUFFLE_STEPS':
-      return {
-        ...state,
-        shuffleSteps: Math.max(0, state.shuffleSteps - 1),
-      }
-    case 'FIELDCLICK':
+
+    case 'PIECE_CLICKED':
       return fieldClickReducer(state, action)
-    case 'KEYUP':
-    case 'KEYDOWN':
-    case 'KEYLEFT':
-    case 'KEYRIGHT':
-      return moveReducer(state, action)
+
+    case 'KEY_ARROW_PRESSED':
+      return keyboardMoveReducer(state, action)
 
     default:
       return state
   }
 }
 
-// -------
-// ACTIONS
-// -------
+// ---------------
+// ACTION CREATORS
+// ---------------
 
-export function shuffleFields(size: number): A<'SHUFFLE'> {
-  const shuffledFields = newFieldsShuffled(size)
-  const fieldRotations = makeFieldRotations(shuffledFields)
-
-  return { type: 'SHUFFLE', shuffledFields, fieldRotations }
-}
-
-export function randomMove(size: number, fields: Field[]): A<MoveActionType> {
-  const dir = randomValidDirection(size, fields)
-  const moveActionType = actionByDirection(dir)
-
-  return { type: moveActionType, rotation: randomAngle() }
-}
-
-export function movePiece(index: number): A<'FIELDCLICK'> {
-  return { type: 'FIELDCLICK', index, rotation: randomAngle() }
-}
-
-export function globalKeyDown(
-  event: KeyboardEvent
-): A<MoveActionType> | A<'SET_SIZE'> | A<'DEFAULT'> {
+export function shuffleMoveInitiatedAction(
+  size: number,
+  fields: Field[]
+): A<'SHUFFLE_MOVE_INITIATED'> {
+  const direction = randomValidDirection(size, fields)
   const rotation = randomAngle()
+
+  return { type: 'SHUFFLE_MOVE_INITIATED', direction, rotation }
+}
+
+export function pieceClickedAction(index: number): A<'PIECE_CLICKED'> {
+  return { type: 'PIECE_CLICKED', index, rotation: randomAngle() }
+}
+
+export function keyPressedAction(
+  event: KeyboardEvent
+): A<'KEY_ARROW_PRESSED' | 'KEY_NUMERIC_PRESSED' | 'NOTHING'> {
   const key = event.key
 
-  if (key === 'ArrowDown') return { type: 'KEYDOWN', rotation }
-  if (key === 'ArrowUp') return { type: 'KEYUP', rotation }
-  if (key === 'ArrowLeft') return { type: 'KEYLEFT', rotation }
-  if (key === 'ArrowRight') return { type: 'KEYRIGHT', rotation }
+  // ARROW KEY
 
-  if (sizes.includes(Number(key))) {
-    return { type: 'SET_SIZE', size: Number(key) }
+  const direction = keyMap[key]
+  if (direction) {
+    return {
+      type: 'KEY_ARROW_PRESSED',
+      direction: direction,
+      rotation: randomAngle(),
+    }
   }
 
-  return { type: 'DEFAULT' }
+  // NUMERIC KEY
+
+  const numericKey = Number(key)
+  if (sizes.includes(numericKey)) {
+    return { type: 'KEY_NUMERIC_PRESSED', size: numericKey }
+  }
+
+  // UNASSIGNED KEY
+
+  return { type: 'NOTHING' }
 }
 
 // -----------------
@@ -158,51 +173,55 @@ function sizeReducer(size: number, state: State): State {
   }
 }
 
-function fieldClickReducer(state: State, action: A<'FIELDCLICK'>): State {
-  const dir = directionFromEmpty(action.index, state.size, state.fields)
+function fieldClickReducer(state: State, action: A<'PIECE_CLICKED'>): State {
+  const direction = directionFromEmpty(action.index, state.size, state.fields)
 
-  if (!dir) return state
+  if (!direction) return state
 
-  const moveActionType = actionByDirection(dir)
-  return moveReducer(state, { type: moveActionType, rotation: action.rotation })
+  return keyboardMoveReducer(state, {
+    type: 'KEY_ARROW_PRESSED',
+    direction,
+    rotation: action.rotation,
+  })
 }
 
-function moveReducer(state: State, action: A<MoveActionType>): State {
-  const dir = directionByActionType(action.type)
-  const fieldIndex = getAdjacentIndex(dir, state.size, state.fields)
+function keyboardMoveReducer(
+  state: State,
+  { direction, rotation }: A<'KEY_ARROW_PRESSED'>
+): State {
+  const fieldIndex = getAdjacentIndex(direction, state.size, state.fields)
   const fieldValue = fieldIndex ? state.fields[fieldIndex] : undefined
   const newRotations = fieldValue
-    ? new Map(state.fieldRotations).set(fieldValue, action.rotation)
+    ? new Map(state.fieldRotations).set(fieldValue, rotation)
     : state.fieldRotations
+  const fields = moveEmpty(direction, state.size, state.fields)
 
   return {
     ...state,
-    fields: moveEmpty(dir, state.size, state.fields),
+    fields,
     fieldRotations: newRotations,
-    playerDirection: dir,
+    playerDirection: direction,
   }
 }
 
-// -------
-// HELPERS
-// -------
+function shuffleMoveReducer(
+  state: State,
+  {direction, rotation}: A<'SHUFFLE_MOVE_INITIATED'>
+): State {
+  const nullIndex = state.fields.indexOf(null)
 
-export function actionByDirection(dir: Direction): MoveActionType {
-  const directionMap: Record<Direction, MoveActionType> = {
-    down: 'KEYDOWN',
-    up: 'KEYUP',
-    left: 'KEYLEFT',
-    right: 'KEYRIGHT',
-  }
-  return directionMap[dir]
-}
+  const fields = moveEmpty(direction, state.size, state.fields)
+  const movedField = fields[nullIndex]
+  const fieldRotations = new Map(state.fieldRotations).set(
+    movedField,
+    rotation
+  )
 
-export function directionByActionType(action: MoveActionType): Direction {
-  const directionMap: Record<MoveActionType, Direction> = {
-    KEYDOWN: 'down',
-    KEYUP: 'up',
-    KEYLEFT: 'left',
-    KEYRIGHT: 'right',
+  return {
+    ...state,
+    fields,
+    fieldRotations,
+    playerDirection: direction,
+    shuffleSteps: Math.max(0, state.shuffleSteps - 1),
   }
-  return directionMap[action]
 }

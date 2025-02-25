@@ -4,10 +4,14 @@ import { Header } from './Header'
 import { Counter } from './Counter'
 import { Button } from './Button'
 import { Lamp } from './Lamp'
-import { useGlobalKeyDown } from './useGlobalKeyDown'
+import { useKeyPress } from './useKeyPress'
 import { minSize, maxSize, shuffleDelay } from './config'
 import { useDispatch, useStore } from './store'
-import { globalKeyDown, movePiece, randomMove } from './reducer'
+import {
+  keyPressedAction,
+  pieceClickedAction,
+  shuffleMoveInitiatedAction,
+} from './reducer'
 import { useCallback, useEffect, useRef } from 'react'
 import { Field } from './Field'
 import { Player } from './Player'
@@ -24,13 +28,13 @@ export function App() {
   const dispatch = useDispatch()
   const shuffleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  useGlobalKeyDown(event => dispatch(globalKeyDown(event)))
+  useKeyPress(event => dispatch(keyPressedAction(event)))
 
   // Shuffling
   useEffect(() => {
     if (isShuffling && shuffleSteps > 0) {
       shuffleTimeoutRef.current = setTimeout(() => {
-        shuffleStep()
+        dispatch(shuffleMoveInitiatedAction(size, fields))
       }, shuffleDelay)
     }
 
@@ -39,36 +43,32 @@ export function App() {
         clearTimeout(shuffleTimeoutRef.current)
         shuffleTimeoutRef.current = null
       }
-      if (shuffleSteps <= 1 && isShuffling) dispatch({ type: 'END_SHUFFLING' })
+      if (shuffleSteps <= 1 && isShuffling)
+        dispatch({ type: 'SHUFFLE_COMPLETED' })
     }
   }, [isShuffling, shuffleSteps])
 
-  function shuffleStep() {
-    dispatch(randomMove(size, fields))
-    dispatch({ type: 'DECREMENT_SHUFFLE_STEPS' })
-  }
-
   const handleShuffleClick = useCallback(() => {
-    dispatch({ type: 'START_SHUFFLING' })
-    shuffleStep()
+    dispatch({ type: 'SHUFFLE_BUTTON_CLICKED' })
+    dispatch(shuffleMoveInitiatedAction(size, fields))
   }, [dispatch, size])
 
   const handleStopClick = useCallback(() => {
-    dispatch({ type: 'END_SHUFFLING' })
+    dispatch({ type: 'STOP_BUTTON_CLICKED' })
   }, [dispatch])
 
   const handleDecrement = useCallback(
-    () => dispatch({ type: 'SHRINK' }),
+    () => dispatch({ type: 'SHRINK_BUTTON_CLICKED' }),
     [dispatch]
   )
 
   const handleIncrement = useCallback(
-    () => dispatch({ type: 'GROW' }),
+    () => dispatch({ type: 'GROW_BUTTON_CLICKED' }),
     [dispatch]
   )
 
   const handleFieldClick = useCallback(
-    (index: number) => dispatch(movePiece(index)),
+    (index: number) => dispatch(pieceClickedAction(index)),
     [dispatch]
   )
 
