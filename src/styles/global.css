@@ -1,3 +1,4 @@
+@import './mixins.css';
 @import './reset.css';
 
 :root {

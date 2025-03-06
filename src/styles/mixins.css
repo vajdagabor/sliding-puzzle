@@ -1,0 +1,24 @@
+@define-mixin theme-light {
+  --color-bg: var(--c-white);
+  --color-strong: var(--c-gray-dark);
+  --color-normal: var(--c-gray-middle);
+  --color-subtle: var(--c-gray-subtle);
+  --color-primary: var(--c-blue);
+  --color-yes-light: var(--c-green);
+  --color-yes-dark: var(--c-green-middle);
+}
+
+@define-mixin theme-dark {
+  --color-bg: var(--c-gray-dark);
+  --color-strong: var(--c-white);
+  --color-normal: var(--c-gray-subtle);
+  --color-subtle: var(--c-gray-middle);
+  --color-primary: var(--c-blue);
+  --color-yes-light: var(--c-green);
+  --color-yes-dark: var(--c-green-middle);
+}
+
+@define-mixin all-caps {
+  text-transform: uppercase;
+  letter-spacing: 0.1ch;
+}
