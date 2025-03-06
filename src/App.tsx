@@ -75,7 +75,7 @@ export function App() {
 
   return (
     <>
-      <Header title="Slider">
+      <Header title="Tile Tangle">
         <Lamp isOn={isSorted(fields)} label={'Sorted'} />
         <Counter
           n={size}
