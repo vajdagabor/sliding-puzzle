@@ -1,11 +1,12 @@
+import { useCallback, useEffect, useRef } from 'react'
 import { Board } from './components/Board'
 import { Button } from './components/Button'
 import { Counter } from './components/Counter'
 import { Field } from './components/Field'
+import { GitHubLogo } from './components/GitHubLogo'
 import { Header } from './components/Header'
 import { Lamp } from './components/Lamp'
 import { Player } from './components/Player'
-import { useCallback, useEffect, useRef } from 'react'
 import { maxSize, minSize, shuffleDelay } from './config'
 import { isCorrect, isSorted } from './model'
 import {
@@ -107,6 +108,11 @@ export function App() {
           )}
         </Board>
       </main>
+      <footer>
+        <a href="https://github.com/vajdagabor/sliding-puzzle" title='View on GitHub'>
+          <GitHubLogo />
+        </a>
+      </footer>
     </>
   )
 }
