@@ -1,5 +1,6 @@
 import { memo } from "react"
-import { Direction } from "./types"
+import { Direction } from "../../types"
+import './style.css'
 
 interface Props {
   direction: Direction

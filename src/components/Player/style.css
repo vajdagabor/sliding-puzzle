@@ -1,0 +1,19 @@
+.Player {
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  font-size: 3em;
+
+  &[data-direction='up'] {
+    transform: rotate(180deg);
+  }
+  &[data-direction='left'] {
+    transform: rotate(90deg);
+  }
+  &[data-direction='right'] {
+    transform: rotate(270deg);
+  }
+}

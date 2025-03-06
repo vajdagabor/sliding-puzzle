@@ -1,20 +1,20 @@
-import { Board } from './Board'
+import { Board } from './components/Board'
+import { Button } from './components/Button'
+import { Counter } from './components/Counter'
+import { Field } from './components/Field'
+import { Header } from './components/Header'
+import { Lamp } from './components/Lamp'
+import { Player } from './components/Player'
+import { useCallback, useEffect, useRef } from 'react'
+import { maxSize, minSize, shuffleDelay } from './config'
 import { isCorrect, isSorted } from './model'
-import { Header } from './Header'
-import { Counter } from './Counter'
-import { Button } from './Button'
-import { Lamp } from './Lamp'
-import { useKeyPress } from './useKeyPress'
-import { minSize, maxSize, shuffleDelay } from './config'
-import { useDispatch, useStore } from './store'
 import {
   keyPressedAction,
   pieceClickedAction,
   shuffleMoveInitiatedAction,
 } from './reducer'
-import { useCallback, useEffect, useRef } from 'react'
-import { Field } from './Field'
-import { Player } from './Player'
+import { useDispatch, useStore } from './store'
+import { useKeyPress } from './useKeyPress'
 
 export function App() {
   const {

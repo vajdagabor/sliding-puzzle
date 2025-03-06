@@ -1,0 +1,29 @@
+.Field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2em;
+  height: 2em;
+  border-radius: var(--radius);
+  user-select: none;
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: var(--color-bg);
+  color: var(--color-strong);
+  transition: all 0.3s ease-out;
+  cursor: pointer;
+
+  &:hover {
+    border: 2px solid var(--color-strong);
+  }
+
+  &:not([data-correct='true']) {
+    box-shadow: 0px 4px 0 var(--color-strong), 0 0 6px rgba(0, 0, 0, 0.8);
+    transform: rotate(var(--rotation, 0deg));
+  }
+
+  &[data-correct='true'] {
+    box-shadow: none;
+    opacity: 75%;
+  }
+}

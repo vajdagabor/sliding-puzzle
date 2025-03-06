@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Button } from './Button'
+import { Button } from '../Button'
+import './style.css'
 
 interface Props {
   n?: number

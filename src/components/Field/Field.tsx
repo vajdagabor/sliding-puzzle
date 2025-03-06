@@ -1,5 +1,6 @@
 import { memo } from 'react'
-import { Field as FieldType } from './types'
+import { Field as FieldType } from '../../types'
+import './style.css'
 
 interface Props {
   value: FieldType

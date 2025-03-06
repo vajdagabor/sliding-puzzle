@@ -1,0 +1,11 @@
+.Board {
+  --board-size: 3;
+
+  display: inline-grid;
+  grid-template-columns: repeat(var(--board-size), 1fr);
+  grid-template-rows: repeat(var(--board-size), 1fr);
+  gap: 6px;
+  padding: 1rem;
+  border-radius: var(--radius);
+  background-color: rgba(255, 255, 255, 0.5);
+}

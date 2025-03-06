@@ -1,0 +1,25 @@
+@import '../../styles/mixins.css';
+
+.Header {
+  @mixin theme-dark;
+
+  display: flex;
+  align-items: center;
+  padding: 2rem;
+  margin: 0.5rem;
+  background-color: var(--color-bg);
+  color: var(--color-normal);
+}
+
+.Header__Title {
+  @mixin all-caps;
+
+  flex-grow: 1;
+  font-weight: bold;
+}
+
+.Header__Tools {
+  display: flex;
+  gap: 2rem;
+  flex-grow: 0;
+}

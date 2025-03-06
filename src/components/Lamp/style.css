@@ -1,0 +1,52 @@
+@import '../../styles/mixins.css';
+
+.Lamp {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .Lamp__Indicator {
+    display: block;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--color-subtle);
+    border-radius: 1rem;
+    transition-property: border-color, background-color, box-shadow, opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .Lamp__Label {
+    @mixin all-caps;
+
+    display: block;
+    font-size: 14px;
+    transition-property: color, opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  &[data-state='on'] {
+    .Lamp__Indicator {
+      border-color: transparent;
+      background-color: var(--color-yes-light);
+      box-shadow: 0 0 30px 5px rgba(255, 255, 255, 0.1),
+        0 0 25px 1px var(--color-yes-light);
+    }
+
+    .Lamp__Label {
+      color: var(--color-strong);
+    }
+  }
+
+  &[data-state='off'] {
+    .Lamp__Indicator {
+      opacity: 0.3;
+    }
+
+    .Lamp__Label {
+      color: var(--color-subtle);
+      opacity: 0.3;
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import './style.css'
 
 interface Props extends React.PropsWithChildren {
   size: number
