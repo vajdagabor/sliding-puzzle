@@ -75,7 +75,7 @@ export function App() {
 
   return (
     <>
-      <Header title="The Slider Game">
+      <Header title="Slider">
         <Lamp isOn={isSorted(fields)} label={'Sorted'} />
         <Counter
           n={size}
