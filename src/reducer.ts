@@ -14,11 +14,20 @@ import {
 // CONSTANTS
 // ---------
 
-const keyMap: Record<string, Direction> = {
+const arrowKeyMap: Record<string, Direction> = {
   ArrowDown: 'down',
   ArrowUp: 'up',
   ArrowLeft: 'left',
   ArrowRight: 'right',
+}
+
+const digitKeyMap: Record<string, number> = {
+  Digit2: 2,
+  Digit3: 3,
+  Digit4: 4,
+  Digit5: 5,
+  Digit6: 6,
+  Digit7: 7,
 }
 
 // -----
@@ -136,11 +145,12 @@ export function keyPressedAction(
 ): A<
   'KEY_ARROW_PRESSED' | 'KEY_NUMERIC_PRESSED' | 'KEY_S_PRESSED' | 'NOTHING'
 > {
-  const key = event.key
+  const code = event.code
+  console.log(event)
 
   // ARROW KEY
 
-  const direction = keyMap[key]
+  const direction = arrowKeyMap[code]
   if (direction) {
     return {
       type: 'KEY_ARROW_PRESSED',
@@ -151,14 +161,14 @@ export function keyPressedAction(
 
   // NUMERIC KEY
 
-  const numericKey = Number(key)
-  if (sizes.includes(numericKey)) {
-    return { type: 'KEY_NUMERIC_PRESSED', size: numericKey }
+  const digit = digitKeyMap[code]
+  if (digit && sizes.includes(digit)) {
+    return { type: 'KEY_NUMERIC_PRESSED', size: digit }
   }
 
   // S KEY
 
-  if (key === 's') {
+  if (code === 'KeyS') {
     return { type: 'KEY_S_PRESSED' }
   }
 
