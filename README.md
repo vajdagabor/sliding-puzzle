@@ -8,3 +8,4 @@ Play at https://puzzle.monomo.io
 
 * Move with <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd>
 * Adjust board size with <kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>5</kbd><kbd>6</kbd><kbd>7</kbd>
+* Shuffle with <kbd>s</kbd>

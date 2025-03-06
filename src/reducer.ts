@@ -45,6 +45,7 @@ export type Action =
   | { type: 'PIECE_CLICKED'; index: number; rotation: number }
   | { type: 'KEY_ARROW_PRESSED'; direction: Direction; rotation: number }
   | { type: 'KEY_NUMERIC_PRESSED'; size: number }
+  | { type: 'KEY_S_PRESSED' }
 
 export type A<T> = Extract<Action, { type: T }>
 
@@ -83,6 +84,7 @@ export const reducer: React.Reducer<State, Action> = function reducer(
       return sizeReducer(action.size, state)
 
     case 'SHUFFLE_BUTTON_CLICKED':
+    case 'KEY_S_PRESSED':
       const { size, shuffleSteps: steps } = state
       return {
         ...state,
@@ -131,7 +133,9 @@ export function pieceClickedAction(index: number): A<'PIECE_CLICKED'> {
 
 export function keyPressedAction(
   event: KeyboardEvent
-): A<'KEY_ARROW_PRESSED' | 'KEY_NUMERIC_PRESSED' | 'NOTHING'> {
+): A<
+  'KEY_ARROW_PRESSED' | 'KEY_NUMERIC_PRESSED' | 'KEY_S_PRESSED' | 'NOTHING'
+> {
   const key = event.key
 
   // ARROW KEY
@@ -150,6 +154,12 @@ export function keyPressedAction(
   const numericKey = Number(key)
   if (sizes.includes(numericKey)) {
     return { type: 'KEY_NUMERIC_PRESSED', size: numericKey }
+  }
+
+  // S KEY
+
+  if (key === 's') {
+    return { type: 'KEY_S_PRESSED' }
   }
 
   // UNASSIGNED KEY
@@ -206,16 +216,13 @@ function keyboardMoveReducer(
 
 function shuffleMoveReducer(
   state: State,
-  {direction, rotation}: A<'SHUFFLE_MOVE_INITIATED'>
+  { direction, rotation }: A<'SHUFFLE_MOVE_INITIATED'>
 ): State {
   const nullIndex = state.fields.indexOf(null)
 
   const fields = moveEmpty(direction, state.size, state.fields)
   const movedField = fields[nullIndex]
-  const fieldRotations = new Map(state.fieldRotations).set(
-    movedField,
-    rotation
-  )
+  const fieldRotations = new Map(state.fieldRotations).set(movedField, rotation)
 
   return {
     ...state,
