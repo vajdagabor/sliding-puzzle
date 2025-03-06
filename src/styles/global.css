@@ -18,7 +18,8 @@ html {
   @mixin theme-light;
 
   background-color: var(--color-primary);
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: 'Rubik', sans-serif;
+  font-optical-sizing: auto;
   font-size: 18px;
   user-select: none;
   min-height: 100vh;
