@@ -83,7 +83,7 @@ export function App() {
 
   return (
     <>
-      <Header title="Tile Tangle">
+      <Header title="React Puzzle Lab">
         <Lamp isOn={isSorted(fields)} label={'Sorted'} />
         <Counter
           n={size}
