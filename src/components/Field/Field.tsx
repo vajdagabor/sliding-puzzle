@@ -4,26 +4,32 @@ import './style.css'
 
 interface Props {
   value: FieldType
-  index: number
+  posX: number
+  posY: number
   isCorrect?: boolean
   rotation?: number
-  onClick: (index: number) => void
+  onClick: (value: FieldType) => void
 }
 
 export const Field = memo(Field_)
 function Field_({
   value,
-  index,
+  posX,
+  posY,
   isCorrect = false,
   rotation = 0,
   onClick,
 }: Props) {
+  const gridColumn = `${posX + 1} / ${posX + 2}`
+  const gridRow = `${posY + 1} / ${posY + 2}`
   const style: Record<string, string> = {
     '--rotation': `${rotation}deg`,
+    gridColumn,
+    gridRow,
   }
 
   const handleClick: React.MouseEventHandler = () => {
-    onClick(index)
+    onClick(value)
   }
 
   return (

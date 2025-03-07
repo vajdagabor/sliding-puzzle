@@ -51,7 +51,7 @@ export type Action =
   | { type: 'SHUFFLE_BUTTON_CLICKED' }
   | { type: 'SHUFFLE_MOVE_INITIATED'; direction: Direction; rotation: number }
   | { type: 'STOP_BUTTON_CLICKED' }
-  | { type: 'PIECE_CLICKED'; index: number; rotation: number }
+  | { type: 'PIECE_CLICKED'; value: Field; rotation: number }
   | { type: 'KEY_ARROW_PRESSED'; direction: Direction; rotation: number }
   | { type: 'KEY_NUMERIC_PRESSED'; size: number }
   | { type: 'KEY_S_PRESSED' }
@@ -61,7 +61,6 @@ export type A<T> = Extract<Action, { type: T }>
 // -------------
 // INITIAL STATE
 // -------------
-
 export const initialState: State = {
   size: initialSize,
   fields: newFields(initialSize),
@@ -136,8 +135,10 @@ export function shuffleMoveInitiatedAction(
   return { type: 'SHUFFLE_MOVE_INITIATED', direction, rotation }
 }
 
-export function pieceClickedAction(index: number): A<'PIECE_CLICKED'> {
-  return { type: 'PIECE_CLICKED', index, rotation: randomAngle() }
+export function pieceClickedAction(
+  value: Field
+): A<'PIECE_CLICKED'> {
+  return { type: 'PIECE_CLICKED', value, rotation: randomAngle() }
 }
 
 export function keyPressedAction(
@@ -194,8 +195,10 @@ function sizeReducer(size: number, state: State): State {
 }
 
 function fieldClickReducer(state: State, action: A<'PIECE_CLICKED'>): State {
-  const direction = directionFromEmpty(action.index, state.size, state.fields)
+  if (action.value === null) return state
+  const index = state.fields.indexOf(action.value)
 
+  const direction = directionFromEmpty(index, state.size, state.fields)
   if (!direction) return state
 
   return keyboardMoveReducer(state, {

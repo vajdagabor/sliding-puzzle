@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Board } from './components/Board'
 import { Button } from './components/Button'
 import { Counter } from './components/Counter'
@@ -8,7 +8,7 @@ import { Header } from './components/Header'
 import { Lamp } from './components/Lamp'
 import { Player } from './components/Player'
 import { maxSize, minSize, shuffleDelay } from './config'
-import { isCorrect, isSorted } from './model'
+import { findNullPos, isSorted, posOf } from './model'
 import {
   keyPressedAction,
   pieceClickedAction,
@@ -16,6 +16,7 @@ import {
 } from './reducer'
 import { useDispatch, useStore } from './store'
 import { useKeyPress } from './useKeyPress'
+import { Field as FieldType, Pos } from './types'
 
 export function App() {
   const {
@@ -28,6 +29,13 @@ export function App() {
   } = useStore()
   const dispatch = useDispatch()
   const shuffleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const orderedFields = useMemo(() => fields, [size])
+  const fieldPositions: Map<FieldType, Pos> = fields.reduce((acc, v) => {
+    return acc.set(
+      v,
+      v === null ? findNullPos(size, fields) : posOf(fields.indexOf(v), size)
+    )
+  }, new Map())
 
   useKeyPress(event => dispatch(keyPressedAction(event)))
 
@@ -69,7 +77,7 @@ export function App() {
   )
 
   const handleFieldClick = useCallback(
-    (index: number) => dispatch(pieceClickedAction(index)),
+    (value: FieldType) => dispatch(pieceClickedAction(value)),
     [dispatch]
   )
 
@@ -92,24 +100,33 @@ export function App() {
       </Header>
       <main>
         <Board size={size}>
-          {fields.map((value, i) =>
+          {orderedFields.map((value, i) =>
             value === null ? (
-              <Player key={Number(value)} direction={playerDirection} />
+              <Player
+                key={Number(value)}
+                direction={playerDirection}
+                posX={fieldPositions.get(null)!.x}
+                posY={fieldPositions.get(null)!.y}
+              />
             ) : (
               <Field
                 key={value}
                 value={value}
+                posX={fieldPositions.get(value)!.x}
+                posY={fieldPositions.get(value)!.y}
                 rotation={fieldRotations.get(value)}
-                isCorrect={isCorrect(i, value)}
+                isCorrect={value === fields[i]}
                 onClick={handleFieldClick}
-                index={i}
               />
             )
           )}
         </Board>
       </main>
       <footer>
-        <a href="https://github.com/vajdagabor/sliding-puzzle" title='View on GitHub'>
+        <a
+          href="https://github.com/vajdagabor/sliding-puzzle"
+          title="View on GitHub"
+        >
           <GitHubLogo />
         </a>
       </footer>
