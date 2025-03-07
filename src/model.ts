@@ -74,6 +74,19 @@ export function valueOf(pos: Pos, size: number, fields: Field[]): Field {
   return fields[indexOf(pos, size)]
 }
 
+export function fieldPositions(fields: Field[], size: number) {
+  return fields.reduce(
+    (acc, field) =>
+      acc.set(
+        field,
+        field === null
+          ? findNullPos(size, fields)
+          : posOf(fields.indexOf(field), size)
+      ),
+    new Map()
+  )
+}
+
 const isSameRow = (p1: Pos, p2: Pos) => p1.y === p2.y
 const isSameCol = (p1: Pos, p2: Pos) => p1.x === p2.x
 const areAdjacentLines = (p1: Pos, p2: Pos) => Math.abs(p1.y - p2.y) === 1

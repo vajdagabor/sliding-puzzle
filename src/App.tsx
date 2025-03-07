@@ -8,7 +8,7 @@ import { Header } from './components/Header'
 import { Lamp } from './components/Lamp'
 import { Player } from './components/Player'
 import { maxSize, minSize, shuffleDelay } from './config'
-import { findNullPos, isSorted, posOf } from './model'
+import { fieldPositions, isSorted } from './model'
 import {
   keyPressedAction,
   pieceClickedAction,
@@ -16,7 +16,7 @@ import {
 } from './reducer'
 import { useDispatch, useStore } from './store'
 import { useKeyPress } from './useKeyPress'
-import { Field as FieldType, Pos } from './types'
+import { Field as FieldType } from './types'
 
 export function App() {
   const {
@@ -30,12 +30,7 @@ export function App() {
   const dispatch = useDispatch()
   const shuffleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const orderedFields = useMemo(() => fields, [size])
-  const fieldPositions: Map<FieldType, Pos> = fields.reduce((acc, v) => {
-    return acc.set(
-      v,
-      v === null ? findNullPos(size, fields) : posOf(fields.indexOf(v), size)
-    )
-  }, new Map())
+  const positions = fieldPositions(fields, size)
 
   useKeyPress(event => dispatch(keyPressedAction(event)))
 
@@ -105,15 +100,15 @@ export function App() {
               <Player
                 key={Number(value)}
                 direction={playerDirection}
-                posX={fieldPositions.get(null)!.x}
-                posY={fieldPositions.get(null)!.y}
+                posX={positions.get(null)!.x}
+                posY={positions.get(null)!.y}
               />
             ) : (
               <Field
                 key={value}
                 value={value}
-                posX={fieldPositions.get(value)!.x}
-                posY={fieldPositions.get(value)!.y}
+                posX={positions.get(value)!.x}
+                posY={positions.get(value)!.y}
                 rotation={fieldRotations.get(value)}
                 isCorrect={value === fields[i]}
                 onClick={handleFieldClick}
