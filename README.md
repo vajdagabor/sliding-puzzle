@@ -1,4 +1,4 @@
-# Puzzle!
+# React Puzzle Lab
 
 A sliding puzzle with a twist, built with React. I'ts just an experiment, but a fun one, I guess.
 
