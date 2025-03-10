@@ -147,7 +147,6 @@ export function keyPressedAction(
   'KEY_ARROW_PRESSED' | 'KEY_NUMERIC_PRESSED' | 'KEY_S_PRESSED' | 'NOTHING'
 > {
   const code = event.code
-  console.log(event)
 
   // ARROW KEY
 
